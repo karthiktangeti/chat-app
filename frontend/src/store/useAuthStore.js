@@ -15,11 +15,13 @@ export const useAuthStore = create((set, get) => ({
 
   checkAuth: async () => {
     try {
+      console.log("Checking auth...");
       const res = await axiosInstance.get("/auth/check");
+      console.log("Auth check successful:", res.data);
       set({ authUser: res.data });
       get().connectSocket();
     } catch (error) {
-      console.log("Error in authCheck:", error);
+      console.log("Auth check failed:", error.response?.status, error.response?.data);
       set({ authUser: null });
     } finally {
       set({ isCheckingAuth: false });
@@ -64,7 +66,10 @@ export const useAuthStore = create((set, get) => ({
       toast.success("Logged out successfully");
       get().disconnectSocket();
     } catch (error) {
-      toast.error("Error logging out");
+      // Even if logout fails, clear local state
+      set({ authUser: null });
+      get().disconnectSocket();
+      toast.success("Logged out locally");
       console.log("Logout error:", error);
     }
   },

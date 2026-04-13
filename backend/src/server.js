@@ -24,7 +24,19 @@ app.use(cookieParser());
 // ✅ FIXED CORS (VERY IMPORTANT)
 app.use(
   cors({
-    origin: ["http://localhost:5173", "https://chat-app-gold-xi-58.vercel.app"],
+    origin: function (origin, callback) {
+      // Allow requests with no origin (like mobile apps or curl requests)
+      if (!origin) return callback(null, true);
+
+      // Allow localhost for development
+      if (origin.includes('localhost')) return callback(null, true);
+
+      // Allow Vercel deployments (they end with vercel.app)
+      if (origin.includes('vercel.app')) return callback(null, true);
+
+      // Reject other origins
+      return callback(new Error('Not allowed by CORS'));
+    },
     credentials: true,
   }),
 );
