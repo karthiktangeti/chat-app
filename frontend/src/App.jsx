@@ -15,7 +15,10 @@ function App() {
     checkAuth();
   }, [checkAuth]);
 
-  if (isCheckingAuth) return <PageLoader />;
+  // Force login page for debugging - remove this after fixing
+  const forceLogin = true; // Set to true to force login page
+
+  if (isCheckingAuth && !forceLogin) return <PageLoader />;
 
   return (
     <div className="min-h-screen bg-slate-900 relative flex items-center justify-center p-4 overflow-hidden">
@@ -25,9 +28,9 @@ function App() {
       <div className="absolute bottom-0 -right-4 size-96 bg-cyan-500 opacity-20 blur-[100px]" />
 
       <Routes>
-        <Route path="/" element={authUser ? <ChatPage /> : <Navigate to={"/login"} />} />
-        <Route path="/login" element={!authUser ? <LoginPage /> : <Navigate to={"/"} />} />
-        <Route path="/signup" element={!authUser ? <SignUpPage /> : <Navigate to={"/"} />} />
+        <Route path="/" element={(authUser && !forceLogin) ? <ChatPage /> : <Navigate to={"/login"} />} />
+        <Route path="/login" element={(!authUser || forceLogin) ? <LoginPage /> : <Navigate to={"/"} />} />
+        <Route path="/signup" element={(!authUser || forceLogin) ? <SignUpPage /> : <Navigate to={"/"} />} />
       </Routes>
 
       <Toaster />

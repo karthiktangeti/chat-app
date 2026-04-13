@@ -7,6 +7,8 @@ const router = express.Router();
 
 router.use(arcjetProtection);
 
+router.get("/test", (req, res) => res.status(200).json({ message: "Auth API is working!" }));
+
 router.post("/signup", signup);
 router.post("/login", login);
 router.post("/logout", logout);
