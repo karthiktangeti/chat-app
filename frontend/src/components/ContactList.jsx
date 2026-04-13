@@ -11,7 +11,11 @@ function ContactList() {
     getAllContacts();
   }, [getAllContacts]);
 
+  // ✅ loading state
   if (isUsersLoading) return <UsersLoadingSkeleton />;
+
+  // ✅ FIX: safe check before map
+  if (!Array.isArray(allContacts)) return null;
 
   return (
     <>
@@ -22,16 +26,30 @@ function ContactList() {
           onClick={() => setSelectedUser(contact)}
         >
           <div className="flex items-center gap-3">
-            <div className={`avatar ${onlineUsers.includes(contact._id) ? "online" : "offline"}`}>
+            {/* ✅ FIX: safe onlineUsers check */}
+            <div
+              className={`avatar ${
+                Array.isArray(onlineUsers) && onlineUsers.includes(contact._id)
+                  ? "online"
+                  : "offline"
+              }`}
+            >
               <div className="size-12 rounded-full">
-                <img src={contact.profilePic || "/avatar.png"} />
+                <img
+                  src={contact.profilePic || "/avatar.png"}
+                  alt={contact.fullName || "User"}
+                />
               </div>
             </div>
-            <h4 className="text-slate-200 font-medium">{contact.fullName}</h4>
+
+            <h4 className="text-slate-200 font-medium">
+              {contact.fullName || "Unknown User"}
+            </h4>
           </div>
         </div>
       ))}
     </>
   );
 }
+
 export default ContactList;
