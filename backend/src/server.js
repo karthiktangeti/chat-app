@@ -36,5 +36,12 @@ if (ENV.NODE_ENV === "production") {
 
 connectDB();
 
+// Start server for local development
+if (ENV.NODE_ENV !== "production") {
+  server.listen(PORT, () => {
+    console.log(`Server running on port ${PORT}`);
+  });
+}
+
 // For Vercel compatibility
 export default app;
