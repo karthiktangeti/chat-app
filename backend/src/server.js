@@ -3,7 +3,6 @@ import dns from "node:dns";
 dns.setDefaultResultOrder("ipv4first");
 dns.setServers(["8.8.8.8", "8.8.4.4"]);
 
-
 import cookieParser from "cookie-parser";
 import path from "path";
 import cors from "cors";
@@ -18,14 +17,23 @@ const __dirname = path.resolve();
 
 const PORT = ENV.PORT || 3000;
 
-app.use(express.json({ limit: "5mb" })); // req.body
-app.use(cors({ origin: ENV.CLIENT_URL || true, credentials: true }));
+// ✅ Middleware
+app.use(express.json({ limit: "5mb" }));
 app.use(cookieParser());
 
+// ✅ FIXED CORS (VERY IMPORTANT)
+app.use(
+  cors({
+    origin: ["http://localhost:5173", "https://chat-app-gold-xi-58.vercel.app"],
+    credentials: true,
+  }),
+);
+
+// ✅ Routes
 app.use("/api/auth", authRoutes);
 app.use("/api/messages", messageRoutes);
 
-// make ready for deployment
+// ✅ Serve frontend (for production if needed)
 if (ENV.NODE_ENV === "production") {
   app.use(express.static(path.join(__dirname, "../frontend/dist")));
 
@@ -34,14 +42,13 @@ if (ENV.NODE_ENV === "production") {
   });
 }
 
+// ✅ Connect DB
 connectDB();
 
-// Start server for local development
-if (ENV.NODE_ENV !== "production") {
-  server.listen(PORT, () => {
-    console.log(`Server running on port ${PORT}`);
-  });
-}
+// ✅ FIXED: Always start server
+server.listen(PORT, () => {
+  console.log(`Server running on port ${PORT}`);
+});
 
-// For Vercel compatibility
+// ✅ For Vercel compatibility
 export default app;
